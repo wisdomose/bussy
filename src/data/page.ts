@@ -11,4 +11,20 @@ export const pages = {
     href: "/dashboard",
     label: "dashboard",
   },
+  buses: {
+    href: "/buses",
+    label: "bus management",
+  },
+  trip: {
+    href: "/trip",
+    label: "trip",
+  },
+  transactions: {
+    href: "/transactions",
+    label: "transactions",
+  },
+  routes: {
+    href: "/routes",
+    label: "routes",
+  },
 };

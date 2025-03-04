@@ -50,7 +50,6 @@ export default class UserService {
 
         throw new Error("Failed to login");
       } catch (error: any) {
-        console.log(error);
         reject(error?.response?.data ?? error?.message ?? "Failed to login");
       }
     });
@@ -91,9 +90,9 @@ export default class UserService {
         );
 
         const querySnapshot = await getDoc(userRef);
-
+        
         if (querySnapshot.exists()) {
-          const data = querySnapshot.data;
+          const data = querySnapshot.data();
           resolve(data as unknown as User);
         } else {
           throw new Error("User doesn't exist");

@@ -2,7 +2,8 @@ import { FieldValue, Timestamp } from "firebase/firestore";
 
 export enum USER_ROLE {
   admin = "admin",
-  user = "user",
+  student = "student",
+  driver = "driver",
 }
 
 export type User = {

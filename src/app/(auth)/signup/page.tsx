@@ -34,9 +34,9 @@ import {
 
 const signupSchema = z.object({
   email: z.string().email(),
-  name: z.string().email().min(2, "Name is too short"),
+  name: z.string().min(2, "Name is too short"),
   password: z.string().min(6, "Password is too short"),
-  role: z.enum([USER_ROLE.admin, USER_ROLE.user]),
+  role: z.enum([USER_ROLE.admin, USER_ROLE.student, USER_ROLE.driver]),
 });
 
 export default function SignupPage() {
@@ -60,7 +60,7 @@ export default function SignupPage() {
     defaultValues: {
       email: "",
       name: "",
-      role: USER_ROLE.user,
+      role: USER_ROLE.student,
       password: "",
     },
   });
@@ -158,12 +158,30 @@ export default function SignupPage() {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a user role" />
+                        <SelectValue
+                          placeholder="Select a user role"
+                          className="capitalize"
+                        />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={USER_ROLE.user}>
-                        {USER_ROLE.user}
+                      <SelectItem
+                        value={USER_ROLE.student}
+                        className="capitalize"
+                      >
+                        {USER_ROLE.student}
+                      </SelectItem>
+                      <SelectItem
+                        value={USER_ROLE.driver}
+                        className="capitalize"
+                      >
+                        {USER_ROLE.driver}
+                      </SelectItem>
+                      <SelectItem
+                        value={USER_ROLE.admin}
+                        className="capitalize"
+                      >
+                        {USER_ROLE.admin}
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -178,7 +196,9 @@ export default function SignupPage() {
 
             <p className="text-sm text-center">
               Already have an account?{" "}
-              <Link href={pages.login.href} className="underline font-medium">Login</Link>
+              <Link href={pages.login.href} className="underline font-medium">
+                Login
+              </Link>
             </p>
           </form>
         </Form>

@@ -2,11 +2,11 @@ import * as admin from "firebase-admin";
 import { initializeApp as initializeClientApp } from "firebase/app";
 import { getAuth } from "firebase-admin/auth";
 import {
-  addDoc,
-  collection,
   serverTimestamp,
   getFirestore,
   connectFirestoreEmulator,
+  setDoc,
+  doc,
 } from "firebase/firestore";
 import { NextApiRequest, NextApiResponse } from "next";
 import { COLLECTIONS, User, USER_ROLE } from "@/types";
@@ -21,7 +21,7 @@ export default async function handler(
     if (req.method !== "POST")
       return res.status(200).send("API up and running");
 
-    const { email, password, displayName = "", role } = req.body;
+    const { email, password, name = "", role } = req.body;
 
     const validEmail = z.string().email().safeParse(email);
     if (!validEmail.success) {
@@ -72,23 +72,25 @@ export default async function handler(
     const userRecord = await getAuth(admin2).createUser({
       email,
       password,
-      displayName,
+      displayName:name,
       emailVerified: false,
       disabled: false,
     });
 
-    const doc: User = {
+    const userDoc: User = {
       id: userRecord.uid,
       role: role as USER_ROLE,
       email,
-      name: displayName,
+      name,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     };
 
-    await addDoc(collection(db, COLLECTIONS.users), doc);
+    const userRef = doc(db, COLLECTIONS.users, userRecord.uid);
 
-    res.status(200).json(doc);
+    await setDoc(userRef, userDoc);
+
+    res.status(200).json(userDoc);
   } catch (error: any) {
     res.status(400).send(error.message);
   }

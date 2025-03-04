@@ -1,4 +1,7 @@
 export enum COLLECTIONS {
   users = "users",
-  companies = "companies",
+  routes = "routes",
+  buses = "buses",
+  trips = "trips",
+  transactions = "transactions",
 }

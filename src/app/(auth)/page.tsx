@@ -60,6 +60,7 @@ export default function LoginPage() {
   });
 
   function onSubmit(data: z.infer<typeof loginSchema>) {
+    console.log("on submit")
     wrapper(() => {
       return userService.login(data);
     });

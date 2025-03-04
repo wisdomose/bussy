@@ -177,12 +177,12 @@ export default function SignupPage() {
                       >
                         {USER_ROLE.driver}
                       </SelectItem>
-                      <SelectItem
+                      {/* <SelectItem
                         value={USER_ROLE.admin}
                         className="capitalize"
                       >
                         {USER_ROLE.admin}
-                      </SelectItem>
+                      </SelectItem> */}
                     </SelectContent>
                   </Select>
                   <FormMessage />

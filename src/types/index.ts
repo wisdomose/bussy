@@ -1,6 +1,5 @@
 export * from "./invoice";
 export * from "./firebase";
-export * from "./company";
 export * from "./user";
 export * from "./route";
 export * from "./bus";

@@ -47,6 +47,7 @@ export default function RoutesPage() {
   const addFetcher = useFetcher<boolean>(null);
   const [routes, setRoutes] = useState<Route[]>([]);
   const routeRepo = new RouteService();
+  const [open, setOpen] = useState(false);
 
   const form = useForm<z.infer<typeof addSchema>>({
     resolver: zodResolver(addSchema),
@@ -55,6 +56,10 @@ export default function RoutesPage() {
       cost: 100,
     },
   });
+
+  function updateOpenHandler(open: boolean) {
+    setOpen(open);
+  }
 
   function onSubmit(data: z.infer<typeof addSchema>) {
     addFetcher.wrapper(() => {
@@ -78,6 +83,7 @@ export default function RoutesPage() {
     if (addFetcher.data) {
       toast.success("Route created successfully");
       fetchRoutesHandler();
+      updateOpenHandler(false);
       form.reset();
     }
   }, [addFetcher.data]);
@@ -87,9 +93,9 @@ export default function RoutesPage() {
       <div className="flex justify-between mt-8">
         <h1 className="text-2xl">All routes</h1>
 
-        <Dialog>
+        <Dialog open={open} onOpenChange={updateOpenHandler}>
           <DialogTrigger asChild>
-            <Button>Add a route</Button>
+            <Button onClick={() => updateOpenHandler(true)}>Add a route</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogTitle className="sr-only">Add a route</DialogTitle>

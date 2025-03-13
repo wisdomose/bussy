@@ -20,8 +20,8 @@ import TripService, { TripWithPagination } from "@/services/trip";
 import { Bus, Route, Trip } from "@/types";
 import { format } from "date-fns";
 import { Timestamp } from "firebase/firestore";
-import { Loader2Icon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { EyeIcon, Loader2Icon } from "lucide-react";
+import { Fragment, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -46,6 +46,7 @@ import { Label } from "@/components/ui/label";
 import RouteService, { RouteWithPagination } from "@/services/routes";
 import BusService, { BusWithPagination } from "@/services/buses";
 import { useAuthStore } from "@/store/auth";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const addSchema = z.object({
   destinationId: z
@@ -82,7 +83,8 @@ export function DriverDashboard() {
     tripFetcher.wrapper(() => tripRepo.findAll({ driverId: profile?.id }));
   }
   function fetchBusesHandler() {
-    busFetcher.wrapper(() => busRepo.findAll());
+    if (!profile) return;
+    busFetcher.wrapper(() => busRepo.findAll({ driverId: profile?.id }));
   }
   function fetchRoutesHandler() {
     routeFetcher.wrapper(() => routeRepo.findAll());
@@ -98,7 +100,7 @@ export function DriverDashboard() {
     fetchTripHandler();
     fetchBusesHandler();
     fetchRoutesHandler();
-  }, []);
+  }, [profile]);
 
   useEffect(() => {
     if (tripFetcher.data) setTrips(tripFetcher.data.trips);
@@ -237,6 +239,7 @@ export function DriverDashboard() {
                 <TableHead>Date</TableHead>
                 <TableHead>No of seats</TableHead>
                 <TableHead>No of occupants</TableHead>
+                <TableHead className="whitespace-nowrap"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -251,6 +254,9 @@ export function DriverDashboard() {
                   </TableCell>
                   <TableCell>{trip.bus.seats}</TableCell>
                   <TableCell>{trip.occupants.length}</TableCell>
+                  <TableCell>
+                    <DetailsPopup trip={trip} />
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -268,5 +274,84 @@ export function DriverDashboard() {
         ) : null}
       </div>
     </div>
+  );
+}
+
+function DetailsPopup({ trip }: { trip: Trip }) {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button size={"icon"} variant={"outline"}>
+          <EyeIcon />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="p-0">
+        <ScrollArea className="max-h-[80dvh]">
+          <div className="p-6">
+            <DialogTitle>Trip details</DialogTitle>
+            <div className="grid grid-cols-2 gap-y-5 gap-x-20 border-b py-4">
+              <p className="font-medium text-sm">Destination</p>
+              <div className="place-self-left">
+                <p className="capitalize text-sm">{trip.destination.route}</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-y-5 gap-x-20 border-b py-4">
+              <p className="font-medium text-sm">Cost</p>
+              <div className="place-self-left">
+                <p className="capitalize text-sm">
+                  {Intl.NumberFormat("en-NG", {
+                    style: "currency",
+                    currency: "NGN",
+                  }).format(trip.destination.cost)}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-y-5 gap-x-20 border-b py-4">
+              <p className="font-medium text-sm">Date</p>
+              <div className="place-self-left">
+                <p className="text-sm">
+                  {format((trip.createdAt as Timestamp).toDate(), "MM/dd/yyyy")}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-y-5 gap-x-20 border-b py-4">
+              <p className="font-medium text-sm">Driver</p>
+              <div className="place-self-left">
+                <p className="capitalize text-sm">{trip.driver.name}</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-y-5 gap-x-20 border-b py-4">
+              <p className="font-medium text-sm">No of seats</p>
+              <div className="place-self-left">
+                <p className="capitalize text-sm">{trip.bus.seats}</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-y-2 gap-x-20 py-4">
+              <p className="font-medium text-base">Occupants</p>
+              <div className="place-self-left">
+              </div>
+              <div className="col-span-2 border rounded-md py-2">
+                {trip.occupants.map(
+                  (occupant) => (
+                    <div
+                      className="border-b py-2 last:border-b-0 px-4"
+                      key={occupant.id}
+                    >
+                      <p className="font-medium text-sm capitalize">{occupant.name}</p>
+                      <p className="text-xs">{occupant.email}</p>
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+          </div>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
   );
 }

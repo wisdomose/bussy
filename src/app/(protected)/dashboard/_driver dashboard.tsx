@@ -324,6 +324,7 @@ function DetailsPopup({ trip }: { trip: Trip }) {
               </div>
             </div>
 
+{/* no of seats */}
             <div className="grid grid-cols-2 gap-y-5 gap-x-20 border-b py-4">
               <p className="font-medium text-sm">No of seats</p>
               <div className="place-self-left">
